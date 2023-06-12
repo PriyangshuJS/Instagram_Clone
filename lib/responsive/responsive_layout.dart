@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../utility/global_var.dart';
 
+// ignore: camel_case_types
 class Responsive_Layout extends StatelessWidget {
   final Widget mobileScreenLayout;
   final Widget webScreenLayout;
