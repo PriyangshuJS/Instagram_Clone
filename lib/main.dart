@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:instagram/responsive/mobile_layout.dart';
 import 'package:instagram/responsive/responsive_layout.dart';
 import 'package:instagram/responsive/web_layout.dart';
+import 'package:instagram/screens/login_screen.dart';
+import 'package:instagram/utility/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,14 +36,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: mobileBackgroundColor,
       ),
-      home: const Responsive_Layout(
-        mobileScreenLayout: Mobile_Layout(),
-        webScreenLayout: Web_Layout(),
-      ),
+      // home: const Responsive_Layout(
+      //   mobileScreenLayout: Mobile_Layout(),
+      //   webScreenLayout: Web_Layout(),
+      // ),
+      home: const Login_Screen(),
     );
   }
 }
