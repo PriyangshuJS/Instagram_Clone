@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/resources/auth_methord.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/utility/colors.dart';
 
@@ -95,7 +96,13 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             const SizedBox(height: 17),
             InkWell(
-              onTap: null,
+              onTap: () async {
+                await AuthMethord().signUpUser(
+                    email: _emailcontroller.text,
+                    username: _usernamecontroller.text,
+                    bio: _biocontroller.text,
+                    password: _passwordcontroller.text);
+              },
               child: Container(
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -108,7 +115,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   color: blueColor,
                 ),
-                child: const Text("Log In"),
+                child: const Text("Sign up"),
               ),
             ),
             Flexible(flex: 2, child: Container()),
@@ -118,14 +125,14 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: const Text("Don't have an account?  "),
+                  child: const Text("Already have an account?  "),
                 ),
                 InkWell(
-                  onTap: null,
+                  onTap: () {},
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(
-                      "Sign up.",
+                      "Login.",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: blueColor,
