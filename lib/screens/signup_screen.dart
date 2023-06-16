@@ -24,6 +24,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernamecontroller = TextEditingController();
   final TextEditingController _biocontroller = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
   @override
   void dispose() {
     super.dispose();
@@ -39,6 +40,27 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _image = img;
     });
+  }
+
+  void signupUser() async {
+    {
+      setState(() {
+        _isLoading = true;
+      });
+      String res = await AuthMethord().signUpUser(
+        email: _emailcontroller.text,
+        username: _usernamecontroller.text,
+        bio: _biocontroller.text,
+        password: _passwordcontroller.text,
+        file: _image!,
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      if (res != "success") {
+        showSnackBar(res, context);
+      }
+    }
   }
 
   @override
@@ -111,15 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             const SizedBox(height: 17),
             InkWell(
-              onTap: () async {
-                await AuthMethord().signUpUser(
-                  email: _emailcontroller.text,
-                  username: _usernamecontroller.text,
-                  bio: _biocontroller.text,
-                  password: _passwordcontroller.text,
-                  file: _image!,
-                );
-              },
+              onTap: signupUser,
               child: Container(
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -132,7 +146,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   color: blueColor,
                 ),
-                child: const Text("Sign up"),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(color: primaryColor),
+                      )
+                    : const Text("Sign up"),
               ),
             ),
             Flexible(flex: 2, child: Container()),
