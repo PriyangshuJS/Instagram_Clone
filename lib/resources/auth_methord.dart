@@ -2,6 +2,7 @@ import "dart:typed_data";
 
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
 import "package:instagram/resources/storage_methord.dart";
 
 class AuthMethord {
@@ -38,6 +39,25 @@ class AuthMethord {
           "profileUrl": profileUrl,
         });
         res = "success";
+      }
+    } catch (error) {
+      res = error.toString();
+    }
+    print(res);
+    return res;
+  }
+
+  Future<String> loginInUser({
+    required String email,
+    required String password,
+  }) async {
+    String res = "Some Error";
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        _auth.signInWithEmailAndPassword(email: email, password: password);
+        res = "Success";
+      } else {
+        res = "Enter all the Fields";
       }
     } catch (error) {
       res = error.toString();

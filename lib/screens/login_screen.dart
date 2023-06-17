@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/resources/auth_methord.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/utility/colors.dart';
+import 'package:instagram/utility/utils.dart';
 
 import '../widgets/text_input_field.dart';
 
@@ -16,6 +18,7 @@ class Login_Screen extends StatefulWidget {
 class _Login_ScreenState extends State<Login_Screen> {
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,6 +26,24 @@ class _Login_ScreenState extends State<Login_Screen> {
 
     _emailcontroller.dispose();
     _passwordcontroller.dispose();
+  }
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethord().loginInUser(
+      email: _emailcontroller.text,
+      password: _passwordcontroller.text,
+    );
+
+    if (res == "Success") {
+    } else {
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -73,7 +94,13 @@ class _Login_ScreenState extends State<Login_Screen> {
                   ),
                   color: blueColor,
                 ),
-                child: const Text("Log In"),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: primaryColor,
+                        ),
+                      )
+                    : const Text("Log In"),
               ),
             ),
             Flexible(flex: 2, child: Container()),
