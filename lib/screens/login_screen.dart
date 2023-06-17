@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/resources/auth_methord.dart';
-import 'package:instagram/screens/home_screen.dart';
 import 'package:instagram/screens/signup_screen.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/utility/colors.dart';
@@ -41,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
       email: _emailcontroller.text,
       password: _passwordcontroller.text,
     );
-    print("COMMENT :- $res");
     setState(() {
       _isLoading = false;
     });

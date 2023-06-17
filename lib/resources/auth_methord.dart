@@ -1,8 +1,10 @@
+import "dart:async";
 import "dart:typed_data";
 
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:instagram/models/user.dart";
 import "package:instagram/resources/storage_methord.dart";
 
 class AuthMethord {
@@ -29,15 +31,19 @@ class AuthMethord {
         print(cred.user!.uid);
         String profileUrl = await StorageMethord()
             .uploadImagetoStorage("ProfileImage", file, false);
-        _firestore.collection("User").doc(cred.user!.uid).set({
-          "Username": username,
-          "email": email,
-          "UID": cred.user!.uid,
-          "bio": bio,
-          "followers": [],
-          "following": [],
-          "profileUrl": profileUrl,
-        });
+
+        ModelUser user = ModelUser(
+          email: email,
+          uid: cred.user!.uid,
+          photoUrl: profileUrl,
+          username: username,
+          bio: bio,
+          followers: [],
+          following: [],
+        );
+        _firestore.collection("User").doc(cred.user!.uid).set(
+              user.toJson(),
+            );
         res = "success";
       }
     } catch (error) {
@@ -54,7 +60,8 @@ class AuthMethord {
     String res = "Some Error";
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
-        _auth.signInWithEmailAndPassword(email: email, password: password);
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
         res = "Success";
       } else {
         res = "Enter all the Fields";
