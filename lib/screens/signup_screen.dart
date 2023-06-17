@@ -3,10 +3,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram/resources/auth_methord.dart';
+import 'package:instagram/screens/login_screen.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/utility/colors.dart';
 import 'package:instagram/utility/utils.dart';
 
+import '../responsive/mobile_layout.dart';
+import '../responsive/responsive_layout.dart';
+import '../responsive/web_layout.dart';
 import '../widgets/text_input_field.dart';
 
 // ignore: camel_case_types
@@ -58,7 +62,18 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       if (res != "success") {
+        // ignore: use_build_context_synchronously
         showSnackBar(res, context);
+      } else {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const Responsive_Layout(
+              mobileScreenLayout: Mobile_Layout(),
+              webScreenLayout: Web_Layout(),
+            ),
+          ),
+        );
       }
     }
   }
@@ -163,7 +178,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: const Text("Already have an account?  "),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginScreen())),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(

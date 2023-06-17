@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/resources/auth_methord.dart';
+import 'package:instagram/screens/home_screen.dart';
+import 'package:instagram/screens/signup_screen.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/utility/colors.dart';
 import 'package:instagram/utility/utils.dart';
 
+import '../responsive/mobile_layout.dart';
+import '../responsive/responsive_layout.dart';
+import '../responsive/web_layout.dart';
 import '../widgets/text_input_field.dart';
 
 // ignore: camel_case_types
-class Login_Screen extends StatefulWidget {
-  const Login_Screen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Login_Screen> createState() => _Login_ScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 // ignore: camel_case_types
-class _Login_ScreenState extends State<Login_Screen> {
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
   bool _isLoading = false;
@@ -36,14 +41,24 @@ class _Login_ScreenState extends State<Login_Screen> {
       email: _emailcontroller.text,
       password: _passwordcontroller.text,
     );
-
-    if (res == "Success") {
-    } else {
-      showSnackBar(res, context);
-    }
+    print("COMMENT :- $res");
     setState(() {
       _isLoading = false;
     });
+    if (res != "Success") {
+      // ignore: use_build_context_synchronously
+      showSnackBar(res, context);
+    } else {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const Responsive_Layout(
+            mobileScreenLayout: Mobile_Layout(),
+            webScreenLayout: Web_Layout(),
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -76,12 +91,12 @@ class _Login_ScreenState extends State<Login_Screen> {
             Text_Input_Field(
               hintText: 'Password',
               textInputType: TextInputType.emailAddress,
-              textEditingController: _emailcontroller,
+              textEditingController: _passwordcontroller,
               isPass: true,
             ),
             const SizedBox(height: 17),
             InkWell(
-              onTap: null,
+              onTap: loginUser,
               child: Container(
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -113,7 +128,9 @@ class _Login_ScreenState extends State<Login_Screen> {
                   child: const Text("Don't have an account?  "),
                 ),
                 InkWell(
-                  onTap: null,
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SignupScreen(),
+                  )),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(
