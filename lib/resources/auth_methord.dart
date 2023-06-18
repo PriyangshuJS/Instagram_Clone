@@ -1,15 +1,20 @@
 import "dart:async";
 import "dart:typed_data";
-
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/material.dart";
-import "package:instagram/models/user.dart";
+import "package:instagram/models/user.dart" as model;
 import "package:instagram/resources/storage_methord.dart";
 
 class AuthMethord {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<model.User> getUserDetail() async {
+    //User currentUser = _auth.currentUser!;
+    DocumentSnapshot snap =
+        await _firestore.collection("User").doc(_auth.currentUser!.uid).get();
+    return model.User.fromSnap(snap);
+  }
 
   Future<String> signUpUser({
     required String email,
@@ -32,7 +37,7 @@ class AuthMethord {
         String profileUrl = await StorageMethord()
             .uploadImagetoStorage("ProfileImage", file, false);
 
-        ModelUser user = ModelUser(
+        model.User user = model.User(
           email: email,
           uid: cred.user!.uid,
           photoUrl: profileUrl,

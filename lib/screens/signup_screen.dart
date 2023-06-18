@@ -68,8 +68,8 @@ class _SignupScreenState extends State<SignupScreen> {
         // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const Responsive_Layout(
-              mobileScreenLayout: Mobile_Layout(),
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileLayout(),
               webScreenLayout: Web_Layout(),
             ),
           ),

@@ -1,24 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../provider/user_provider.dart';
 import '../utility/global_var.dart';
 
 // ignore: camel_case_types
-class Responsive_Layout extends StatelessWidget {
+class ResponsiveLayout extends StatefulWidget {
   final Widget mobileScreenLayout;
   final Widget webScreenLayout;
-  const Responsive_Layout(
-      {super.key,
-      required this.mobileScreenLayout,
-      required this.webScreenLayout});
+  const ResponsiveLayout({
+    Key? key,
+    required this.mobileScreenLayout,
+    required this.webScreenLayout,
+  }) : super(key: key);
+
+  @override
+  State<ResponsiveLayout> createState() => _ResponsiveLayoutState();
+}
+
+class _ResponsiveLayoutState extends State<ResponsiveLayout> {
+  @override
+  void initState() {
+    super.initState();
+    addData();
+  }
+
+  addData() async {
+    UserProvider _userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    await _userProvider.refreshUser();
+  }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxHeight > webScreenSize) {
-          return webScreenLayout;
+        if (constraints.maxWidth > webScreenSize) {
+          return widget.webScreenLayout;
         } else {
-          return mobileScreenLayout;
+          return widget.mobileScreenLayout;
         }
       },
     );
