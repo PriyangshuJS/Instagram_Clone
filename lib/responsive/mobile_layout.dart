@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart' as model;
 import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/utility/colors.dart';
+import 'package:instagram/utility/global_var.dart';
 import 'package:provider/provider.dart';
 
 // ignore: camel_case_types
@@ -54,29 +55,14 @@ class _MobileLayoutState extends State<MobileLayout> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     model.User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       body: PageView(
-        children: [
-          Center(
-            child: Text("${user.username} - Home"),
-          ),
-          Center(
-            child: Text("Seach"),
-          ),
-          Center(
-            child: Text("Add"),
-          ),
-          Center(
-            child: Text("Favorites"),
-          ),
-          Center(
-            child: Text("Profile"),
-          )
-        ],
         controller: pageController,
         onPageChanged: onPageChange,
         physics: const NeverScrollableScrollPhysics(),
+        children: homeScreenItems,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
