@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:instagram/resources/firestore_methord.dart';
 import 'package:provider/provider.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -16,7 +17,49 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
+  final TextEditingController _descriptionController = TextEditingController();
   Uint8List? _file;
+  bool _isLoading = false;
+  void clearImage() {
+    setState(() {
+      _file = null;
+    });
+  }
+
+  void postImage(String uid, String username, String profileImage) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      String res = await FireStoreMethors().uploadPost(
+        _descriptionController.text,
+        _file!,
+        uid,
+        username,
+        profileImage,
+      );
+      if (res == "Success") {
+        setState(() {
+          _isLoading = false;
+        });
+        // ignore: use_build_context_synchronously
+        showSnackBar("Posted", context);
+        clearImage();
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        // ignore: use_build_context_synchronously
+        showSnackBar(res, context);
+      }
+    } catch (err) {
+      setState(() {
+        _isLoading = false;
+      });
+      showSnackBar(err.toString(), context);
+    }
+  }
+
   _selectImage(BuildContext context) async {
     return showDialog(
         context: context,
@@ -59,9 +102,15 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _descriptionController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     model.User user = Provider.of<UserProvider>(context).getUser;
-    TextEditingController _descriptionController = TextEditingController();
+
     return _file == null
         ? Center(
             child: IconButton(
@@ -75,12 +124,13 @@ class _UploadScreenState extends State<UploadScreen> {
               backgroundColor: mobileBackgroundColor,
               title: const Text("Post to"),
               leading: IconButton(
-                onPressed: () {},
+                onPressed: () => clearImage(),
                 icon: const Icon(Icons.arrow_back),
               ),
               actions: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      postImage(user.uid, user.username, user.photoUrl),
                   child: const Text(
                     "Post",
                     style: TextStyle(
@@ -93,6 +143,12 @@ class _UploadScreenState extends State<UploadScreen> {
               ],
             ),
             body: Column(children: [
+              _isLoading
+                  ? const LinearProgressIndicator()
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 0),
+                    ),
+              const Divider(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,

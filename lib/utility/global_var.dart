@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:instagram/screens/upload_screen.dart';
+import 'package:instagram/screens/post_upload_screen.dart';
 
 const webScreenSize = 600;
 
