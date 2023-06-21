@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/widgets/post_card.dart';
-
 import '../utility/colors.dart';
 
 class FeedScreen extends StatelessWidget {
@@ -19,7 +19,22 @@ class FeedScreen extends StatelessWidget {
           IconButton(onPressed: null, icon: Icon(Icons.message_outlined))
         ],
       ),
-      body: PostCard(),
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection("Posts").snapshots(),
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) => PostCard(
+                snap: snapshot.data!.docs[index].data(),
+              ),
+            );
+          }),
     );
   }
 }

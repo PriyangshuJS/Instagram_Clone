@@ -19,7 +19,7 @@ class Post {
     required this.datePublished,
     required this.postUrl,
     required this.profImage,
-    this.likes,
+    required this.likes,
   });
   Map<String, dynamic> toJson() => {
         "username": username,
@@ -29,6 +29,7 @@ class Post {
         "datePublished": datePublished,
         "postUrl": postUrl,
         "profImage": profImage,
+        "likes": likes,
       };
 
   static Post fromSnap(DocumentSnapshot snap) {
@@ -42,6 +43,7 @@ class Post {
       datePublished: snapsort["datePublished"],
       postUrl: snapsort["postUrl"],
       profImage: snapsort["profImage"],
+      likes: snapsort["likes"],
     );
   }
 }
