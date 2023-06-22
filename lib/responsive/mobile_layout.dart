@@ -2,11 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram/models/user.dart' as model;
-import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/utility/colors.dart';
 import 'package:instagram/utility/global_var.dart';
-import 'package:provider/provider.dart';
 
 // ignore: camel_case_types
 class MobileLayout extends StatefulWidget {
