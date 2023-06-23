@@ -148,7 +148,9 @@ class _PostCardState extends State<PostCard> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => CommentScreen(),
+                        builder: (context) => CommentScreen(
+                          snap: widget.snap,
+                        ),
                       ),
                     );
                   },
@@ -205,7 +207,8 @@ class _PostCardState extends State<PostCard> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => CommentScreen(),
+                            builder: (context) =>
+                                CommentScreen(snap: widget.snap),
                           ),
                         );
                       },
