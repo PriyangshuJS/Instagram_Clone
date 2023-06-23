@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:instagram/utility/utils.dart';
 import 'package:intl/intl.dart';
 
 class CommentCard extends StatefulWidget {
@@ -28,7 +27,6 @@ class _CommentCardState extends State<CommentCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Hello"),
                   RichText(
                     text: TextSpan(
                       children: [

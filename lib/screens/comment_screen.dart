@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart';
 import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/resources/firestore_methord.dart';
-import 'package:instagram/screens/feed_screen.dart';
 import 'package:instagram/utility/colors.dart';
 import 'package:instagram/widgets/comment_card.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +16,6 @@ class CommentScreen extends StatefulWidget {
 }
 
 class _CommentScreenState extends State<CommentScreen> {
-  @override
   final TextEditingController _commentController = TextEditingController();
   @override
   void dispose() {
