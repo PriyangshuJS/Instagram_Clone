@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/resources/firestore_methord.dart';
 import 'package:instagram/screens/comment_screen.dart';
 import 'package:instagram/utility/colors.dart';
+import 'package:instagram/utility/utils.dart';
 import 'package:instagram/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,27 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  int commentLength = 0;
+  @override
+  void initState() {
+    super.initState();
+    getcomments();
+  }
+
+  void getcomments() async {
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection("Posts")
+          .doc(widget.snap["postId"])
+          .collection("Comment")
+          .get();
+      commentLength = snap.docs.length;
+    } catch (err) {
+      showSnackBar(err.toString(), context);
+    }
+    setState(() {});
+  }
+
   bool isLikeAnimating = false;
   @override
   Widget build(BuildContext context) {
@@ -212,7 +235,7 @@ class _PostCardState extends State<PostCard> {
                           ),
                         );
                       },
-                      child: Text('View all 200 Comments',
+                      child: Text('View all $commentLength Comments',
                           style: const TextStyle(
                             fontSize: 16,
                             color: secondaryColor,

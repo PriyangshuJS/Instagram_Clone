@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:instagram/utility/utils.dart';
+import 'package:intl/intl.dart';
 
-class CommentCard extends StatelessWidget {
-  const CommentCard({super.key});
+class CommentCard extends StatefulWidget {
+  final snap;
+  const CommentCard({super.key, required this.snap});
 
+  @override
+  State<CommentCard> createState() => _CommentCardState();
+}
+
+class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundImage: NetworkImage(
-                "https://cdn.pixabay.com/photo/2023/06/15/08/05/bee-8064761_1280.jpg"),
+            backgroundImage: NetworkImage(widget.snap["profilePic"]),
           ),
           Expanded(
             child: Padding(
@@ -20,11 +28,12 @@ class CommentCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text("Hello"),
                   RichText(
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: "username",
+                          text: widget.snap["name"],
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -33,7 +42,7 @@ class CommentCard extends StatelessWidget {
                           text: '   ',
                         ),
                         TextSpan(
-                          text: 'some description',
+                          text: widget.snap["text"],
                         )
                       ],
                     ),
@@ -41,7 +50,9 @@ class CommentCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '23/12/21',
+                      DateFormat.yMMMd().format(
+                        widget.snap["datePublished"].toDate(),
+                      ),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,

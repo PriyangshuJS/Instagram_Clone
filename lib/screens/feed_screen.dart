@@ -10,6 +10,7 @@ class FeedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: mobileBackgroundColor,
         title: Image.asset(
           "assets/PngItem_676474.png",
           color: primaryColor,

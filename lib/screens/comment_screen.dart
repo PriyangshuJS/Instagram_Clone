@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart';
 import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/resources/firestore_methord.dart';
+import 'package:instagram/screens/feed_screen.dart';
 import 'package:instagram/utility/colors.dart';
 import 'package:instagram/widgets/comment_card.dart';
 import 'package:provider/provider.dart';
@@ -31,11 +34,34 @@ class _CommentScreenState extends State<CommentScreen> {
           backgroundColor: mobileBackgroundColor,
           title: const Text("Comments"),
           leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
             icon: const Icon(Icons.arrow_back),
           ),
         ),
-        body: CommentCard(),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection("Posts")
+              .doc(widget.snap["postId"])
+              .collection("Comment")
+              .orderBy("datePublished", descending: true)
+              .snapshots(),
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (ctx, index) => CommentCard(
+                snap: snapshot.data!.docs[index],
+              ),
+            );
+          },
+        ),
         bottomNavigationBar: SafeArea(
           child: Container(
             height: kToolbarHeight,
@@ -69,6 +95,9 @@ class _CommentScreenState extends State<CommentScreen> {
                     user.username,
                     user.photoUrl,
                   );
+                  setState(() {
+                    _commentController.text = "";
+                  });
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
