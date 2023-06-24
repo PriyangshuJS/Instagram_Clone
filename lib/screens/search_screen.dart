@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram/screens/profile_screen.dart';
 import 'package:instagram/utility/colors.dart';
 
@@ -46,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
               builder: (context,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -72,7 +73,36 @@ class _SearchScreenState extends State<SearchScreen> {
                     });
               },
             )
-          : Center(child: Text("Posts")),
+          : FutureBuilder(
+              future: FirebaseFirestore.instance
+                  .collection("Posts")
+                  .orderBy("datePublished")
+                  .get(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return StaggeredGridView.countBuilder(
+                  crossAxisCount: 3,
+                  itemCount: (snapshot.data! as dynamic).docs.length,
+                  itemBuilder: (context, index) => ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.network(
+                      snapshot.data!.docs[index]['postUrl'],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  staggeredTileBuilder: (index) => StaggeredTile.count(
+                    (index % 7 == 0) ? 2 : 1,
+                    (index % 7 == 0) ? 2 : 1,
+                  ),
+                  mainAxisSpacing: 8.0,
+                  crossAxisSpacing: 8.0,
+                );
+              },
+            ),
     );
   }
 }
