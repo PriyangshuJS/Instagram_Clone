@@ -34,7 +34,7 @@ class Post {
 
   static Post fromSnap(DocumentSnapshot snap) {
     var snapsort = snap.data() as Map<String, dynamic>;
-    print(snapsort.toString());
+
     return Post(
       username: snapsort["Username"],
       uid: snapsort["UID"],

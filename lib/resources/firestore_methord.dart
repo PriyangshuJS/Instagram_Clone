@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram/models/post.dart';
 import 'package:instagram/resources/storage_methord.dart';
-import 'package:instagram/utility/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class FireStoreMethors {

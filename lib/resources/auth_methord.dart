@@ -74,7 +74,7 @@ class AuthMethord {
     } catch (error) {
       res = error.toString();
     }
-    print(res);
+
     return res;
   }
 }
