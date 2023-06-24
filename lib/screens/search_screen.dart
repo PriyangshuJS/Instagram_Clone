@@ -88,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   crossAxisCount: 3,
                   itemCount: (snapshot.data! as dynamic).docs.length,
                   itemBuilder: (context, index) => ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    //borderRadius: BorderRadius.circular(16.0),
                     child: Image.network(
                       snapshot.data!.docs[index]['postUrl'],
                       fit: BoxFit.cover,

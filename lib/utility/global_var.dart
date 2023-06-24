@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/screens/post_upload_screen.dart';
+import 'package:instagram/screens/profile_screen.dart';
 import 'package:instagram/screens/search_screen.dart';
 import '../screens/feed_screen.dart';
 
@@ -12,7 +13,5 @@ const homeScreenItems = [
   Center(
     child: Text("Favorites"),
   ),
-  Center(
-    child: Text("Profile"),
-  )
+  ProfileScreen(),
 ];
