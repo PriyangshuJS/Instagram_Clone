@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart' as model;
 import 'package:instagram/provider/user_provider.dart';
@@ -15,6 +17,34 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  int postsLen = 0;
+  int followers = 0;
+  int following = 0;
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    var snap = await FirebaseFirestore.instance
+        .collection("Posts")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    var userSnap = await FirebaseFirestore.instance
+        .collection("User")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    setState(
+      () {
+        postsLen = snap.docs.length;
+        var userData = userSnap.data()!;
+        followers = userData['followers'].length;
+        following = userData['following'].length;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final model.User user = Provider.of<UserProvider>(context).getUser;
@@ -44,9 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              buildStatColumn(0, "Posts"),
-                              buildStatColumn(0, "Followers"),
-                              buildStatColumn(100, "Following"),
+                              buildStatColumn(postsLen, "Posts"),
+                              buildStatColumn(followers, "Followers"),
+                              buildStatColumn(following, "Following"),
                             ],
                           ),
                           Row(
@@ -67,21 +97,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(top: 15.0),
-                    child: Text(
-                      user.username,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )),
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Text(
+                    user.username,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(top: 1.0),
+                  padding: const EdgeInsets.only(top: 2.0),
                   child: Text(user.bio),
                 ),
               ],
             ),
           ),
           const Divider(),
+          FutureBuilder(
+            future: FirebaseFirestore.instance
+                .collection("Posts")
+                .where("uid", isEqualTo: user.uid)
+                .get(),
+            builder: (context,
+                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.data!.docs.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 1.5,
+                  childAspectRatio: 1.0,
+                ),
+                itemBuilder: (context, index) {
+                  DocumentSnapshot video = snapshot.data!.docs[index];
+                  return Container(
+                    child: Image(
+                      image: NetworkImage(
+                        (video.data()! as dynamic)["postUrl"],
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
     );
