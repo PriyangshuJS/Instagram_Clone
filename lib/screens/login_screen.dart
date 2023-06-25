@@ -8,6 +8,7 @@ import 'package:instagram/utility/utils.dart';
 import '../responsive/mobile_layout.dart';
 import '../responsive/responsive_layout.dart';
 import '../responsive/web_layout.dart';
+import '../utility/global_var.dart';
 import '../widgets/text_input_field.dart';
 
 // ignore: camel_case_types
@@ -64,7 +65,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
           child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: MediaQuery.of(context).size.width > webScreenSize
+            ? EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width / 3)
+            : const EdgeInsets.symmetric(horizontal: 32),
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/user_provider.dart';
+import '../utility/global_var.dart';
 
 class PostCard extends StatefulWidget {
   final snap;
@@ -50,6 +51,11 @@ class _PostCardState extends State<PostCard> {
       child: Column(
         children: [
           Container(
+            decoration: BoxDecoration(
+                border: Border.all(),
+                color: (MediaQuery.of(context).size.width > webScreenSize)
+                    ? webBackgroundColor
+                    : mobileBackgroundColor),
             padding: const EdgeInsets.symmetric(
               vertical: 4,
               horizontal: 16,
@@ -94,7 +100,9 @@ class _PostCardState extends State<PostCard> {
                                       onTap: () async {
                                         await FireStoreMethors()
                                             .deletePost(widget.snap["postId"]);
-                                        Navigator.of(context).pop();
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -181,9 +189,9 @@ class _PostCardState extends State<PostCard> {
                       ),
                     );
                   },
-                  icon: Icon(Icons.comment_outlined)),
-              IconButton(onPressed: null, icon: Icon(Icons.send)),
-              Expanded(
+                  icon: const Icon(Icons.comment_outlined)),
+              const IconButton(onPressed: null, icon: Icon(Icons.send)),
+              const Expanded(
                   child: Align(
                 alignment: Alignment.bottomRight,
                 child: IconButton(

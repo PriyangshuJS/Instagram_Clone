@@ -36,8 +36,8 @@ class Post {
     var snapsort = snap.data() as Map<String, dynamic>;
 
     return Post(
-      username: snapsort["Username"],
-      uid: snapsort["UID"],
+      username: snapsort["username"],
+      uid: snapsort["uid"],
       description: snapsort["description"],
       postId: snapsort["postId"],
       datePublished: snapsort["datePublished"],

@@ -4,6 +4,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram/screens/profile_screen.dart';
 import 'package:instagram/utility/colors.dart';
 
+import '../utility/global_var.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -43,7 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ? FutureBuilder(
               future: FirebaseFirestore.instance
                   .collection("User")
-                  .where("Username",
+                  .where("username",
                       isGreaterThanOrEqualTo: searchController.text)
                   .get(),
               builder: (context,
@@ -60,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => ProfileScreen(
-                                uid: snapshot.data!.docs[index]["UID"]),
+                                uid: snapshot.data!.docs[index]["uid"]),
                           ),
                         ),
                         child: ListTile(
@@ -97,10 +99,16 @@ class _SearchScreenState extends State<SearchScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  staggeredTileBuilder: (index) => StaggeredTile.count(
-                    (index % 7 == 0) ? 2 : 1,
-                    (index % 7 == 0) ? 2 : 1,
-                  ),
+                  staggeredTileBuilder: (index) =>
+                      (MediaQuery.of(context).size.width > webScreenSize)
+                          ? StaggeredTile.count(
+                              (index % 7 == 0) ? 1 : 1,
+                              (index % 7 == 0) ? 1 : 1,
+                            )
+                          : StaggeredTile.count(
+                              (index % 7 == 0) ? 2 : 1,
+                              (index % 7 == 0) ? 2 : 1,
+                            ),
                   mainAxisSpacing: 8.0,
                   crossAxisSpacing: 8.0,
                 );

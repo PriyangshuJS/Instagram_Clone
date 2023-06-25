@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram/models/user.dart' as model;
-import 'package:instagram/provider/user_provider.dart';
 import 'package:instagram/resources/auth_methord.dart';
 import 'package:instagram/resources/firestore_methord.dart';
 import 'package:instagram/screens/login_screen.dart';
@@ -10,11 +8,13 @@ import 'package:instagram/utility/colors.dart';
 import 'package:instagram/utility/utils.dart';
 import 'package:instagram/widgets/follow_button.dart';
 import 'package:provider/provider.dart';
-
+import '../provider/user_provider.dart';
 import '../widgets/profile_screen_items.dart';
+import 'package:instagram/models/user.dart' as model;
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
+
   const ProfileScreen({super.key, required this.uid});
 
   @override
@@ -55,13 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isFollowing = userSnap
           .data()!["followers"]
           .contains(FirebaseAuth.instance.currentUser!.uid);
-      setState(() {});
+      print(
+          "First-----------------------------------------------------${widget.uid}");
     } catch (err) {
       showSnackBar(err.toString(), context);
     }
-    setState(
-      () {},
-    );
     setState(() {
       isLoading = false;
     });
@@ -69,7 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //final model.User user = Provider.of<UserProvider>(context).getUser;
+    final model.User user = Provider.of<UserProvider>(context).getUser;
+    print(
+        "Second----------------------------------------------------${user.uid}");
     return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
-              title: Text(userData["Username"]),
+              title: Text(user.username),
             ),
             body: ListView(
               children: [
@@ -90,8 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           CircleAvatar(
                             radius: 40.0,
                             backgroundColor: Colors.grey,
-                            backgroundImage:
-                                NetworkImage(userData["profileUrl"]),
+                            backgroundImage: NetworkImage(user.photoUrl),
                           ),
                           Expanded(
                             flex: 1,
@@ -112,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     FirebaseAuth.instance.currentUser!.uid ==
-                                            widget.uid
+                                            user.uid
                                         ? FollowButton(
                                             text: "Sign out",
                                             backgroundColor: Colors.blue,
@@ -120,10 +119,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             textColor: primaryColor,
                                             function: () async {
                                               await AuthMethord().signOut();
-                                              Navigator.of(context).pushReplacement(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const LoginScreen()));
+                                              if (context.mounted) {
+                                                Navigator.of(context)
+                                                    .pushReplacement(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const LoginScreen()));
+                                              }
                                             },
                                           )
                                         : isFollowing
@@ -137,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       .followUser(
                                                           FirebaseAuth.instance
                                                               .currentUser!.uid,
-                                                          userData["UId"]);
+                                                          user.uid);
                                                   setState(() {
                                                     isFollowing = false;
                                                     followers--;
@@ -154,11 +156,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       .followUser(
                                                           FirebaseAuth.instance
                                                               .currentUser!.uid,
-                                                          userData["UId"]);
-                                                  setState(() {
-                                                    isFollowing = true;
-                                                    followers++;
-                                                  });
+                                                          user.uid);
+                                                  setState(
+                                                    () {
+                                                      isFollowing = true;
+                                                      followers++;
+                                                    },
+                                                  );
                                                 },
                                               )
                                   ],
@@ -172,14 +176,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(top: 15.0),
                         child: Text(
-                          userData['Username'],
+                          user.username,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(top: 2.0),
-                        child: Text(userData['bio']),
+                        child: Text(user.bio),
                       ),
                     ],
                   ),
@@ -188,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 FutureBuilder(
                   future: FirebaseFirestore.instance
                       .collection("Posts")
-                      .where("uid", isEqualTo: widget.uid)
+                      .where("uid", isEqualTo: user.uid)
                       .get(),
                   builder: (context,
                       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>

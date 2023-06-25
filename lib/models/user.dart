@@ -22,7 +22,7 @@ class User {
         "username": username,
         "uid": uid,
         "email": email,
-        "photoUrl": photoUrl,
+        "profileUrl": photoUrl,
         "bio": bio,
         "followers": followers,
         "following": following,
@@ -32,8 +32,8 @@ class User {
     var snapsort = snap.data() as Map<String, dynamic>;
     print(snapsort.toString());
     return User(
-      username: snapsort["Username"],
-      uid: snapsort["UID"],
+      username: snapsort["username"],
+      uid: snapsort["uid"],
       email: snapsort["email"],
       photoUrl: snapsort["profileUrl"],
       bio: snapsort["bio"],

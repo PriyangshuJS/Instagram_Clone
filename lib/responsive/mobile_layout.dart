@@ -46,7 +46,7 @@ class _MobileLayoutState extends State<MobileLayout> {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     setState(() {
-      username = (snap.data() as Map<String, dynamic>)["Username"];
+      username = (snap.data() as Map<String, dynamic>)["username"];
     });
   }
 
