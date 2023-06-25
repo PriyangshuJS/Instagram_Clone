@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram/screens/profile_screen.dart';
@@ -31,9 +30,11 @@ class _SearchScreenState extends State<SearchScreen> {
           decoration: const InputDecoration(
               prefixIcon: Icon(Icons.search), labelText: "Search for a user"),
           onFieldSubmitted: (String _) {
-            setState(() {
-              isShowUser = true;
-            });
+            setState(
+              () {
+                isShowUser = true;
+              },
+            );
             print("-----------------$_");
           },
         ),
@@ -59,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => ProfileScreen(
-                                uid: snapshot.data!.docs[index]["uid"]),
+                                uid: snapshot.data!.docs[index]["UID"]),
                           ),
                         ),
                         child: ListTile(
