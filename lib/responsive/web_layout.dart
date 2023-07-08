@@ -81,9 +81,9 @@ class _Web_LayoutState extends State<Web_Layout> {
         ),
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
-          children: homeScreenItems,
           controller: pageController,
           onPageChanged: onPageChanged,
+          children: homeScreenItems,
         ));
   }
 }

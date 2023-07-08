@@ -7,7 +7,7 @@ import 'package:instagram/utility/colors.dart';
 import '../utility/global_var.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -17,28 +17,24 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
   bool isShowUser = false;
   @override
-  void dispose() {
-    super.dispose();
-    searchController.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: TextFormField(
-          controller: searchController,
-          decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search), labelText: "Search for a user"),
-          onFieldSubmitted: (String _) {
-            setState(
-              () {
+        title: Form(
+          child: TextFormField(
+            controller: searchController,
+            decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search), labelText: "Search for a user"),
+            onFieldSubmitted: (String _) {
+              setState(() {
                 isShowUser = true;
-              },
-            );
-            print("-----------------$_");
-          },
+              });
+              print("For _ ----------------$_");
+              print("For Cont----------------${searchController.text}");
+              print("For Cont----------------$isShowUser");
+            },
+          ),
         ),
       ),
       body: isShowUser
@@ -47,35 +43,47 @@ class _SearchScreenState extends State<SearchScreen> {
                   .collection("User")
                   .where("username",
                       isGreaterThanOrEqualTo: searchController.text)
+                  .where('username', isLessThan: searchController.text + "z")
                   .get(),
-              builder: (context,
-                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              builder: (context, snapshot) {
                 if (!snapshot.hasData) {
+                  print("HERE1-----------------------------00");
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
+                print("HERE2-----------------------------");
                 return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(
-                                uid: snapshot.data!.docs[index]["uid"]),
-                          ),
+                  itemCount: (snapshot.data! as dynamic).docs.length,
+                  itemBuilder: (context, index) {
+                    print(
+                        "Here3---------------------------${(snapshot.data! as dynamic).docs[index]["uid"]}");
+                    return InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ProfileScreen(
+                              uid: (snapshot.data! as dynamic).docs[index]
+                                  ["uid"],
+                            );
+                          },
                         ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                (snapshot.data! as dynamic).docs[index]
-                                    ["profileUrl"]),
-                            radius: 16,
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            (snapshot.data! as dynamic).docs[index]
+                                ["profileUrl"],
                           ),
-                          title: Text(snapshot.data!.docs[index]["Username"]),
+                          radius: 16,
                         ),
-                      );
-                    });
+                        title: Text(
+                          (snapshot.data! as dynamic).docs[index]["username"],
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
             )
           : FutureBuilder(
