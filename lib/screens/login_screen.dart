@@ -1,155 +1,156 @@
 import 'package:flutter/material.dart';
-import 'package:instagram/resources/auth_methord.dart';
 import 'package:instagram/screens/signup_screen.dart';
-//import 'package:flutter_svg/flutter_svg.dart';
-import 'package:instagram/utility/colors.dart';
-import 'package:instagram/utility/utils.dart';
 
-import '../responsive/mobile_layout.dart';
-import '../responsive/responsive_layout.dart';
-import '../responsive/web_layout.dart';
-import '../utility/global_var.dart';
-import '../widgets/text_input_field.dart';
+import '../resources/auth_methods.dart';
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive_layout_screen.dart';
+import '../responsive/web_screen_layout.dart';
+import '../utils/colors.dart';
+import '../utils/global_variables.dart';
+import '../utils/utils.dart';
+import '../widgets/text_field_input.dart';
 
-// ignore: camel_case_types
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-// ignore: camel_case_types
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailcontroller = TextEditingController();
-  final TextEditingController _passwordcontroller = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
     super.dispose();
-
-    _emailcontroller.dispose();
-    _passwordcontroller.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
   }
 
   void loginUser() async {
     setState(() {
       _isLoading = true;
     });
-    String res = await AuthMethord().loginInUser(
-      email: _emailcontroller.text,
-      password: _passwordcontroller.text,
-    );
+    String res = await AuthMethods().loginUser(
+        email: _emailController.text, password: _passwordController.text);
     setState(() {
       _isLoading = false;
     });
-    if (res != "Success") {
-      // ignore: use_build_context_synchronously
-      showSnackBar(res, context);
+    if (res != 'success') {
+      print("LOGIN Problem");
+      showSnackbar(res, context);
     } else {
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-            mobileScreenLayout: MobileLayout(),
-            webScreenLayout: Web_Layout(),
+      print("\n\n\n\nLOGIN DONE");
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => MobileScreenLayout(),
+            // builder: (context) => const ResponsiveLayoutScreen(
+            //   webScreenlayout: WebScreenLayout(),
+            //   mobileScreenlayout: MobileScreenLayout(),
+            // ),
           ),
-        ),
-      );
+          (route) => false);
     }
+  }
+
+  void navigateToSignup() async {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const SignupScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Container(
-        padding: MediaQuery.of(context).size.width > webScreenSize
-            ? EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width / 3)
-            : const EdgeInsets.symmetric(horizontal: 32),
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(flex: 2, child: Container()),
-            // SvgPicture.asset(
-            //   "assets/Instagram_logo.svg",
-            //   color: primaryColor,
-            // )
-            Image.asset(
-              "assets/PngItem_676474.png",
-              color: primaryColor,
-              height: 64,
-            ),
-            const SizedBox(height: 50),
-            Text_Input_Field(
-              hintText: 'Email',
-              textInputType: TextInputType.emailAddress,
-              textEditingController: _emailcontroller,
-            ),
-            const SizedBox(height: 10),
-            Text_Input_Field(
-              hintText: 'Password',
-              textInputType: TextInputType.emailAddress,
-              textEditingController: _passwordcontroller,
-              isPass: true,
-            ),
-            const SizedBox(height: 17),
-            InkWell(
-              onTap: loginUser,
-              child: Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: const ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(4),
-                    ),
-                  ),
-                  color: blueColor,
-                ),
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
-                      )
-                    : const Text("Log In"),
+        child: Container(
+          padding: MediaQuery.of(context).size.width > webScreenSize
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width / 3)
+              : const EdgeInsets.symmetric(horizontal: 32),
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Container(),
+                flex: 2,
               ),
-            ),
-            Flexible(flex: 2, child: Container()),
+              Image.asset(
+                "assets/PngItem_676474.png",
+                color: primaryColor,
+                height: 85,
+              ),
+              const SizedBox(height: 64),
+              //Text Field for Email
+              TextFieldInput(
+                textEditingController: _emailController,
+                textInputType: TextInputType.emailAddress,
+                hintText: "Enter your Email",
+              ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: const Text("Don't have an account?  "),
-                ),
-                InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SignupScreen(),
-                  )),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: const Text(
-                      "Sign up.",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: blueColor,
-                      ),
+              const SizedBox(height: 24),
+
+              //Text Field for Password
+              TextFieldInput(
+                textEditingController: _passwordController,
+                textInputType: TextInputType.text,
+                hintText: "Enter your Password",
+                isPass: true,
+              ),
+              const SizedBox(height: 12),
+
+              InkWell(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(
+                              color: primaryColor,
+                            ),
+                          )
+                        : const Text('Login'),
+                    onPressed: loginUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: blueColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 7),
-          ],
+              ),
+              Flexible(
+                child: Container(),
+                flex: 2,
+              ),
+              GestureDetector(
+                onTap: navigateToSignup,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: const Text("Don't have an account?"),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    Container(
+                      child: const Text(
+                        "Sign up",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
