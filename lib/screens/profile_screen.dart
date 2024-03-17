@@ -1,34 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram/resources/auth_methord.dart';
-import 'package:instagram/resources/firestore_methord.dart';
-import 'package:instagram/screens/login_screen.dart';
-import 'package:instagram/utility/colors.dart';
-import 'package:instagram/utility/utils.dart';
-import 'package:instagram/widgets/follow_button.dart';
-import 'package:provider/provider.dart';
-import '../provider/user_provider.dart';
-import '../widgets/profile_screen_items.dart';
-import 'package:instagram/models/user.dart' as model;
+
+import '../resources/auth_methods.dart';
+import '../resources/firestore_methods.dart';
+import '../utils/colors.dart';
+import '../utils/utils.dart';
+import '../widgets/follow_button.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
-
-  const ProfileScreen({super.key, required this.uid});
+  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int postsLen = 0;
   var userData = {};
+  int postLen = 0;
   int followers = 0;
   int following = 0;
   bool isFollowing = false;
   bool isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -40,25 +35,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = true;
     });
     try {
-      var snap = await FirebaseFirestore.instance
-          .collection("Posts")
-          .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
       var userSnap = await FirebaseFirestore.instance
-          .collection("User")
+          .collection('users')
           .doc(widget.uid)
           .get();
-      postsLen = snap.docs.length;
+      // get post length
+      var postSnap = await FirebaseFirestore.instance
+          .collection('posts')
+          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      postLen = postSnap.docs.length;
       userData = userSnap.data()!;
-      followers = userSnap.data()!['followers'].length;
-      following = userSnap.data()!['following'].length;
+      followers = userData['followers'].length;
+      following = userData['following'].length;
       isFollowing = userSnap
-          .data()!["followers"]
+          .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
-      print(
-          "First-----------------------------------------------------${widget.uid}");
+
+      setState(() {});
     } catch (err) {
-      showSnackBar(err.toString(), context);
+      showSnackbar(err.toString(), context);
     }
     setState(() {
       isLoading = false;
@@ -67,17 +63,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final model.User user = Provider.of<UserProvider>(context).getUser;
-    print(
-        "Second----------------------------------------------------${user.uid}");
-    return isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : Scaffold(
-            appBar: AppBar(
-              backgroundColor: mobileBackgroundColor,
-              title: Text(userData["username"]),
-            ),
-            body: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: mobileBackgroundColor,
+        title: Text(userData['username'] ?? ""),
+        centerTitle: false,
+      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16),
@@ -86,23 +82,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           CircleAvatar(
-                            radius: 40.0,
+                            backgroundImage: NetworkImage(userData['photoUrl']),
                             backgroundColor: Colors.grey,
-                            backgroundImage:
-                                NetworkImage(userData["profileUrl"]),
+                            radius: 40,
                           ),
                           Expanded(
                             flex: 1,
                             child: Column(
                               children: [
                                 Row(
+                                  mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.max,
                                   children: [
-                                    buildStatColumn(postsLen, "Posts"),
-                                    buildStatColumn(followers, "Followers"),
-                                    buildStatColumn(following, "Following"),
+                                    buildStatColumn(postLen, 'posts'),
+                                    buildStatColumn(followers, 'followers'),
+                                    buildStatColumn(following, 'following'),
                                   ],
                                 ),
                                 Row(
@@ -112,21 +107,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     FirebaseAuth.instance.currentUser!.uid ==
                                             widget.uid
                                         ? FollowButton(
-                                            text: "Sign out",
-                                            backgroundColor: Colors.blue,
-                                            borderColor: Colors.blue,
+                                            backgroundColor:
+                                                mobileBackgroundColor,
+                                            borderColor: Colors.grey,
+                                            text: "Sign Out",
                                             textColor: primaryColor,
                                             function: () async {
-                                              await AuthMethord().signOut();
-                                              if (context.mounted) {
-                                                Navigator.of(context)
-                                                    .pushReplacement(
+                                              await AuthMethods().signOut();
+                                              Navigator.of(context).pushReplacement(
                                                   MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginScreen(),
-                                                  ),
-                                                );
-                                              }
+                                                      builder: (context) =>
+                                                          const LoginScreen()));
                                             },
                                           )
                                         : isFollowing
@@ -136,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 text: 'Unfollow',
                                                 textColor: Colors.black,
                                                 function: () async {
-                                                  await FireStoreMethors()
+                                                  await FirestoreMethods()
                                                       .followUser(
                                                           FirebaseAuth.instance
                                                               .currentUser!.uid,
@@ -153,17 +144,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 text: 'Follow',
                                                 textColor: Colors.white,
                                                 function: () async {
-                                                  await FireStoreMethors()
+                                                  await FirestoreMethods()
                                                       .followUser(
                                                           FirebaseAuth.instance
                                                               .currentUser!.uid,
                                                           userData['uid']);
-                                                  setState(
-                                                    () {
-                                                      isFollowing = true;
-                                                      followers++;
-                                                    },
-                                                  );
+                                                  setState(() {
+                                                    isFollowing = true;
+                                                    followers++;
+                                                  });
                                                 },
                                               )
                                   ],
@@ -175,29 +164,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(top: 15.0),
+                        padding: const EdgeInsets.only(
+                          top: 15,
+                        ),
                         child: Text(
-                          userData["username"],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          userData['username'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(top: 2.0),
-                        child: Text(userData["bio"]),
-                      ),
+                        padding: const EdgeInsets.only(
+                          top: 1,
+                        ),
+                        child: Text(
+                          userData['bio'],
+                        ),
+                      )
                     ],
                   ),
                 ),
                 const Divider(),
                 FutureBuilder(
                   future: FirebaseFirestore.instance
-                      .collection("Posts")
-                      .where("uid", isEqualTo: user.uid)
+                      .collection('posts')
+                      .where('uid', isEqualTo: widget.uid)
                       .get(),
-                  builder: (context,
-                      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                          snapshot) {
+                  builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         snapshot.connectionState == ConnectionState.none) {
                       return const Center(
@@ -205,30 +200,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     }
                     return GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.docs.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 1.5,
-                        childAspectRatio: 1.0,
-                      ),
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot snap = snapshot.data!.docs[index];
-                        return Image(
-                          image: NetworkImage(
-                            (snap.data()! as dynamic)["postUrl"],
-                          ),
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    );
+                        shrinkWrap: true,
+                        itemCount: (snapshot.data! as dynamic).docs.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 1.5,
+                          childAspectRatio: 1,
+                        ),
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot snap =
+                              (snapshot.data! as dynamic).docs[index];
+                          return Image(
+                            image: NetworkImage(snap['postUrl']),
+                            fit: BoxFit.cover,
+                          );
+                        });
                   },
-                ),
+                )
               ],
             ),
-          );
+    );
+  }
+
+  Column buildStatColumn(int num, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          num.toString(),
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 4),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
