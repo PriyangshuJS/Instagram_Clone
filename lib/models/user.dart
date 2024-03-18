@@ -1,44 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  final String email;
+  final String username;
   final String uid;
   final String photoUrl;
-  final String username;
+  final String email;
   final String bio;
   final List followers;
   final List following;
 
   const User({
-    required this.email,
+    required this.username,
     required this.uid,
     required this.photoUrl,
-    required this.username,
+    required this.email,
     required this.bio,
     required this.followers,
     required this.following,
   });
+
   Map<String, dynamic> toJson() => {
-        "username": username,
-        "uid": uid,
-        "email": email,
-        "profileUrl": photoUrl,
-        "bio": bio,
-        "followers": followers,
-        "following": following,
+        'username': username,
+        'uid': uid,
+        'email': email,
+        'bio': bio,
+        'following': following,
+        'followers': followers,
+        'photoUrl': photoUrl,
       };
 
-  static User fromSnap(DocumentSnapshot snap) {
-    var snapsort = snap.data() as Map<String, dynamic>;
-    print(snapsort.toString());
+  factory User.fromSnap(DocumentSnapshot snap) {
+    var snapshot = snap.data() as Map<String, dynamic>;
     return User(
-      username: snapsort["username"],
-      uid: snapsort["uid"],
-      email: snapsort["email"],
-      photoUrl: snapsort["profileUrl"],
-      bio: snapsort["bio"],
-      followers: snapsort["followers"],
-      following: snapsort["following"],
+      username:
+          snapshot.toString().contains('username') ? snapshot['username'] : '',
+      uid: snapshot.toString().contains('uid') ? snapshot['uid'] : '',
+      email: snapshot.toString().contains('email') ? snapshot['email'] : '',
+      photoUrl:
+          snapshot.toString().contains('photoUrl') ? snapshot['photoUrl'] : '',
+      bio: snapshot.toString().contains('bio') ? snapshot['bio'] : '',
+      followers: snapshot.toString().contains('followers')
+          ? snapshot['followers']
+          : [],
+      following: snapshot.toString().contains('following')
+          ? snapshot['following']
+          : [],
     );
   }
 }

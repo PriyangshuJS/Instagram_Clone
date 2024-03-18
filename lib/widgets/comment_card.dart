@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CommentCard extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
   final snap;
-  const CommentCard({super.key, required this.snap});
+  const CommentCard({Key? key, required this.snap}) : super(key: key);
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -13,12 +14,15 @@ class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      padding: const EdgeInsets.symmetric(
+        vertical: 18,
+        horizontal: 16,
+      ),
       child: Row(
         children: [
           CircleAvatar(
+            backgroundImage: NetworkImage(widget.snap['profilePic']),
             radius: 18,
-            backgroundImage: NetworkImage(widget.snap["profilePic"]),
           ),
           Expanded(
             child: Padding(
@@ -31,39 +35,46 @@ class _CommentCardState extends State<CommentCard> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: widget.snap["name"],
+                          text: widget.snap['name'],
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const TextSpan(
-                          text: '   ',
-                        ),
                         TextSpan(
-                          text: widget.snap["text"],
-                        )
+                          text: ' ${widget.snap['text']}',
+                        ),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      DateFormat.yMMMd().format(
-                        widget.snap["datePublished"].toDate(),
-                      ),
+                      DateFormat.yMMMd()
+                          .format(widget.snap['datePublished'].toDate()),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
           ),
-          Container(
+          InkWell(
+            onTap: () async {
+              // await FirestoreMethods().likeComment(
+              //   widget.snap['postId'],
+              //   widget.snap['commentId'],
+              //   user.uid,
+              //   widget.snap['likes'],
+              // );
+            },
+            child: Container(
               padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.favorite_outline, size: 16))
+              child: const Icon(Icons.favorite, size: 16),
+            ),
+          )
         ],
       ),
     );

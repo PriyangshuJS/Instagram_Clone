@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 
-// ignore: camel_case_types
-class Text_Input_Field extends StatelessWidget {
+class TextFieldInput extends StatelessWidget {
   final TextEditingController textEditingController;
   final bool isPass;
   final String hintText;
   final TextInputType textInputType;
-  const Text_Input_Field(
-      {super.key,
+
+  const TextFieldInput(
+      {Key? key,
       required this.textEditingController,
       this.isPass = false,
-      required this.hintText,
-      required this.textInputType});
+      required this.textInputType,
+      required this.hintText})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final inputBorder = OutlineInputBorder(
-      borderSide: Divider.createBorderSide(context),
-    );
+    // ignore: non_constant_identifier_names
+    final InputBorder =
+        OutlineInputBorder(borderSide: Divider.createBorderSide(context));
     return TextField(
       controller: textEditingController,
       decoration: InputDecoration(
         hintText: hintText,
-        border: inputBorder,
-        focusedBorder: inputBorder,
-        enabledBorder: inputBorder,
+        border: InputBorder,
+        focusedBorder: InputBorder,
+        enabledBorder: InputBorder,
         filled: true,
         contentPadding: const EdgeInsets.all(8),
       ),
