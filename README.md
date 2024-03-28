@@ -46,7 +46,7 @@ $ git clone https://github.com/PriyangshuJS/LinkOne.git
 ```
 3. Install Dependencies: Navigate to the project directory and install the required dependencies:
 ```
-$ cd 
+$ cd LinkOne-master
   flutter pub get
 ```
 4. Firebase Setup: Create a new project on the Firebase Console (https://console.firebase.google.com/) and set up Firebase Authentication, Firestore, and Storage. Obtain your Firebase configuration files and place them in the appropriate locations in the project.
